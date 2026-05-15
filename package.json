@@ -1,0 +1,17 @@
+{
+  "name": "magneto-local",
+  "version": "2.0.0",
+  "description": "Magneto — AI Digital Product Machine (standalone)",
+  "main": "magneto_server.js",
+  "scripts": {
+    "start": "node magneto_server.js",
+    "install-python": "pip install reportlab pillow"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "form-data": "^4.0.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}
