@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>magneto v2 — AI Digital Product Machine</title>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#ff3cac"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Magneto"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #f5f4f8; --bg2: #ffffff; --bg3: #eeecf5; --bg4: #e8e6f0;
+  --border: #dddae8; --border2: #d0cce0; --border3: #c4bfd8;
+  --pink: #e0259a; --pink2: #c41f88; --pink-dim: rgba(224,37,154,0.08); --pink-glow: rgba(224,37,154,0.25);
+  --yellow: #b06000; --green: #1a9a50; --blue: #2563eb; --purple: #7c3aed;
+  --text: #1a1228; --text-muted: #6e6585; --text-dim: #aba3be; --white: #1a1228;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 44px 20px 100px; }
+body::before { content:''; position:fixed; inset:0; background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(224,37,154,0.05) 0%, transparent 70%); pointer-events:none; z-index:0; }
+
+/* ── HEADER ── */
+.header { text-align: center; margin-bottom: 52px; position: relative; z-index: 1; }
+.logo { font-size: 3rem; font-weight: 800; letter-spacing: -0.04em; color: var(--text); }
+.logo span { color: var(--pink); }
+.tagline { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 10px; }
+.badge-row { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.badge { font-family: 'DM Mono', monospace; font-size: 0.66rem; padding: 4px 11px; border-radius: 4px; letter-spacing: 0.08em; }
+.badge-flux { background: rgba(37,99,235,0.1); color: var(--blue); border: 1px solid rgba(37,99,235,0.2); }
+.badge-ds   { background: rgba(124,58,237,0.1); color: var(--purple); border: 1px solid rgba(124,58,237,0.2); }
+.badge-groq { background: rgba(224,37,154,0.1); color: var(--pink); border: 1px solid rgba(224,37,154,0.2); }
+.badge-free { background: rgba(26,154,80,0.1); color: var(--green); border: 1px solid rgba(26,154,80,0.2); }
+
+/* ── LAYOUT ── */
+.max-w { width: 100%; max-width: 640px; position: relative; z-index: 1; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 30px 34px; margin-bottom: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.card-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--pink); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 22px; font-weight: 500; }
+
+/* ── FIELDS ── */
+.field { margin-bottom: 18px; }
+.field label { display: block; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
+.field input, .field textarea, .field select {
+  width: 100%; background: var(--bg3); border: 1.5px solid var(--border2); border-radius: 10px;
+  padding: 13px 16px; font-family: 'Syne', sans-serif; font-size: 1rem; color: var(--text);
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--pink2); box-shadow: 0 0 0 3px var(--pink-dim); }
+.field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
+.field select option { background: var(--bg2); color: var(--text); }
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.65; }
+.row { display: flex; gap: 14px; }
+.row .field { flex: 1; }
+  /* ── BUTTONS ── */
+.btn { width: 100%; padding: 15px 18px; border: none; border-radius: 11px; font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em; margin-top: 8px; }
+.btn-pink  { background: var(--pink); color: #fff; box-shadow: 0 0 24px var(--pink-glow); }
+.btn-pink:hover:not(:disabled)  { background: var(--pink2); box-shadow: 0 0 40px var(--pink-glow); }
+.btn-green { background: var(--green); color: #fff; box-shadow: 0 0 20px rgba(26,154,80,0.25); }
+.btn-green:hover:not(:disabled) { background: #158040; }
+.btn-blue  { background: var(--blue); color: #fff; box-shadow: 0 0 20px rgba(37,99,235,0.25); }
+.btn-blue:hover:not(:disabled)  { background: #1d4ed8; }
+.btn-ghost { background: transparent; color: var(--text-muted); border: 1.5px solid var(--border2); }
+.btn-ghost:hover:not(:disabled) { border-color: var(--pink); color: var(--pink); }
+.btn:disabled { background: var(--border2); color: var(--text-muted); box-shadow: none; cursor: not-allowed; }
+.btn-row { display: flex; gap: 10px; margin-top: 14px; }
+.btn-row .btn { flex: 1; margin-top: 0; }
+.btn-spy { width: 100%; padding: 14px; border: 1.5px solid rgba(37,99,235,0.25); border-radius: 11px; background: rgba(37,99,235,0.06); color: var(--blue); font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; margin-top: 6px; }
+.btn-spy:hover { background: rgba(37,99,235,0.1); border-color: var(--blue); }
+
+/* ── STATUS ── */
+.status-block { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 24px; display: none; width: 100%; max-width: 640px; margin-bottom: 16px; position: relative; z-index: 1; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.status-block.visible { display: block; animation: fadeUp 0.2s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.status-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
+.status-label.generating { color: var(--yellow); }
+.status-label.success    { color: var(--green); }
+.status-label.error      { color: #dc2626; }
+.status-body { font-size: 0.95rem; line-height: 1.75; color: var(--text); white-space: pre-wrap; }
+
+/* ── STEP CONTAINER ── */
+.step { display: none; width: 100%; max-width: 640px; position: relative; z-index: 1; }
+.step.visible { display: block; animation: fadeUp 0.3s ease; }
+.step-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--pink); color: #fff; font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step-title { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+.step-sub { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ── SPY RESULTS ── */
+.spy-result { background: var(--bg3); border: 1.5px solid rgba(37,99,235,0.2); border-radius: 12px; padding: 22px; margin-top: 14px; display: none; }
+.spy-result.visible { display: block; animation: fadeUp 0.3s ease; }
+.spy-section { margin-bottom: 18px; }
+.spy-section:last-child { margin-bottom: 0; }
+.spy-h { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--blue); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; font-weight: 500; }
+.spy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.spy-stat { background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px; padding: 14px; text-align: center; }
+.spy-stat-val { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.spy-stat-label { font-family: 'DM Mono', monospace; font-size: 0.64rem; color: var(--text-muted); }
+.spy-verdict { display: inline-block; padding: 5px 14px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 0.75rem; font-weight: 700; margin-bottom: 14px; }
+.verdict-go     { background: rgba(26,154,80,0.12); color: var(--green); border: 1px solid rgba(26,154,80,0.25); }
+.verdict-caution{ background: rgba(176,96,0,0.1); color: var(--yellow); border: 1px solid rgba(176,96,0,0.2); }
+.verdict-no     { background: rgba(220,38,38,0.1); color: #dc2626; border: 1px solid rgba(220,38,38,0.2); }
+.competitor-card { background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
+.competitor-card:last-child { margin-bottom: 0; }
+.comp-name  { font-weight: 700; color: var(--text); font-size: 1rem; margin-bottom: 4px; }
+.comp-price { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--yellow); margin-bottom: 10px; }
+.comp-cols  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.comp-col-label { font-family: 'DM Mono', monospace; font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; font-weight: 500; }
+.comp-col-label.good { color: var(--green); }
+.comp-col-label.bad  { color: #dc2626; }
+.comp-item { font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 3px; }
+.comp-item::before { content: "· "; color: var(--text-dim); }
+.gap-tag { display: inline-block; background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.18); color: var(--purple); font-family: 'DM Mono', monospace; font-size: 0.68rem; padding: 4px 10px; border-radius: 6px; margin: 3px; }
+.winning-angle { background: var(--pink-dim); border: 1px solid rgba(224,37,154,0.15); border-radius: 8px; padding: 16px; font-size: 0.95rem; line-height: 1.7; color: var(--text); }
+
+  * ── PLAN BOX ── */
+.plan-box { background: var(--bg3); border: 1.5px solid var(--border2); border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+.plan-title { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.plan-meta { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; display: flex; gap: 14px; flex-wrap: wrap; }
+.plan-meta span { color: var(--yellow); }
+.palette-swatch { display: inline-flex; align-items: center; gap: 5px; }
+.swatch { display: inline-block; width: 13px; height: 13px; border-radius: 4px; border: 1px solid var(--border2); flex-shrink: 0; }
+.plan-desc { font-size: 0.95rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 16px; }
+.prompt-pill { display: flex; align-items: center; gap: 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; margin-bottom: 8px; }
+.prompt-num  { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--pink); width: 22px; flex-shrink: 0; font-weight: 600; }
+.prompt-name { font-weight: 700; color: var(--text); font-size: 0.9rem; min-width: 100px; flex-shrink: 0; }
+.prompt-text { color: var(--text-muted); font-size: 0.82rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── IMAGE GRID ── */
+.image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+.image-cell { background: var(--bg3); border: 1.5px solid var(--border2); border-radius: 12px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.image-cell img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+.image-cell .cell-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.9); font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--pink); text-align: center; padding: 5px 2px; letter-spacing: 0.07em; text-transform: uppercase; font-weight: 600; }
+.image-cell .cell-loading { font-family: 'DM Mono', monospace; font-size: 0.66rem; color: var(--text-muted); text-align: center; padding: 12px; }
+.image-cell .cell-error { font-size: 0.66rem; color: #dc2626; text-align: center; padding: 12px; }
+.image-cell.done    { border-color: var(--pink); }
+.image-cell.fallback{ border-color: var(--yellow); }
+.image-cell.loading { border-color: var(--yellow); animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.image-cell.errored { border-color: #dc2626; }
+.engine-tag { position: absolute; top: 6px; right: 6px; font-family: 'DM Mono', monospace; font-size: 0.54rem; padding: 3px 6px; border-radius: 4px; font-weight: 600; }
+.engine-flux { background: rgba(37,99,235,0.12); color: var(--blue); }
+.engine-free { background: rgba(26,154,80,0.12); color: var(--green); }
+
+.progress-bar-wrap { background: var(--bg3); border-radius: 6px; height: 7px; margin-bottom: 16px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--pink), var(--purple)); border-radius: 6px; transition: width 0.4s ease; box-shadow: 0 0 10px var(--pink-glow); }
+
+/* ── LISTING FIELDS ── */
+.listing-field { margin-bottom: 16px; }
+.listing-field label { display: block; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; font-weight: 500; }
+.listing-field textarea, .listing-field input { width: 100%; background: var(--bg3); border: 1.5px solid var(--border2); border-radius: 10px; padding: 12px 14px; font-family: 'Syne', sans-serif; font-size: 0.98rem; color: var(--text); outline: none; transition: border-color 0.15s; }
+.listing-field textarea { resize: vertical; min-height: 100px; line-height: 1.65; }
+.listing-field textarea:focus, .listing-field input:focus { border-color: var(--pink2); }
+
+.pdf-ready { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pdf-badge { background: var(--green); color: #fff; font-family: 'DM Mono', monospace; font-size: 0.66rem; font-weight: 700; padding: 5px 12px; border-radius: 5px; flex-shrink: 0; }
+.pdf-link  { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--green); text-decoration: none; font-weight: 600; }
+.pdf-link:hover { text-decoration: underline; }
+.pdf-print-btn { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--blue); text-decoration: none; font-weight: 600; background: none; border: 1.5px solid rgba(37,99,235,0.3); border-radius: 7px; padding: 5px 12px; cursor: pointer; transition: all 0.15s; margin-left: auto; }
+.pdf-print-btn:hover { background: rgba(37,99,235,0.08); border-color: var(--blue); }
+
+/* ── HISTORY ── */
+.history { width: 100%; max-width: 640px; margin-top: 36px; position: relative; z-index: 1; }
+.history-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 14px; font-weight: 500; }
+.history-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 15px 18px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.history-name { font-size: 1rem; font-weight: 600; color: var(--text); }
+.history-meta { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; }
+.history-link { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--pink); text-decoration: none; font-weight: 600; }
+
+/* ── SETTINGS ── */
+.settings-btn { position: fixed; top: 18px; right: 18px; background: var(--bg2); border: 1.5px solid var(--border2); color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 0.82rem; padding: 9px 16px; border-radius: 8px; cursor: pointer; z-index: 300; transition: all 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.settings-btn:hover { border-color: var(--pink); color: var(--pink); }
+.settings-overlay { display: none; position: fixed; inset: 0; background: rgba(20,10,40,0.5); z-index: 400; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.settings-overlay.visible { display: flex; }
+.settings-modal { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 18px; padding: 34px; width: 100%; max-width: 500px; margin: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.18); }
+.settings-title { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.settings-sub   { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 26px; }
+.settings-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.settings-section:last-of-type { border-bottom: none; }
+.settings-section-title { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 14px; font-weight: 500; }
+.settings-field { margin-bottom: 16px; }
+.settings-field label { display: block; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; font-weight: 500; }
+.settings-field input { width: 100%; background: var(--bg3); border: 1.5px solid var(--border2); border-radius: 10px; padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--text); outline: none; transition: border-color 0.15s; }
+.settings-field input:focus { border-color: var(--pink2); }
+.settings-field .hint { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
+.key-status { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.62rem; padding: 2px 8px; border-radius: 4px; margin-left: 7px; }
+.key-status.set     { background: rgba(26,154,80,0.12); color: var(--green); }
+.key-status.missing { background: rgba(220,38,38,0.1); color: #dc2626; }
+.ai-toggle { display: flex; gap: 10px; margin-bottom: 14px; }
+.ai-toggle-btn { flex: 1; padding: 11px; border: 1.5px solid var(--border2); border-radius: 9px; background: var(--bg3); color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; text-align: center; }
+.ai-toggle-btn.active { border-color: var(--pink); color: var(--pink); background: var(--pink-dim); }
+</style>
+</head>
+<body>
+
+<button class="settings-btn" onclick="openSettings()">⚙ keys</button>
+
+<!-- SETTINGS MODAL -->
+  <div class="settings-overlay" id="settings-overlay" onclick="closeSettingsOutside(event)">
+  <div class="settings-modal">
+    <div class="settings-title">API Keys</div>
+    <div class="settings-sub">// saved in browser only — never stored on any server</div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">// AI Engine</div>
+      <div class="ai-toggle">
+        <div class="ai-toggle-btn active" id="toggle-groq" onclick="setAIPreference('groq')">Groq (fast, free)</div>
+        <div class="ai-toggle-btn" id="toggle-ds" onclick="setAIPreference('deepseek')">DeepSeek (smarter)</div>
+      </div>
+      <div class="settings-field">
+        <label>Groq API Key <span class="key-status" id="groq-status">not set</span></label>
+        <input id="key-groq" type="password" placeholder="gsk_..."/>
+        <div class="hint">Free at console.groq.com — fastest AI option</div>
+      </div>
+      <div class="settings-field">
+        <label>DeepSeek API Key <span class="key-status" id="deepseek-status">not set</span></label>
+        <input id="key-deepseek" type="password" placeholder="sk-..."/>
+        <div class="hint">api.deepseek.com — smarter outputs, very cheap ($0.14/1M tokens)</div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">// Image Generation</div>
+      <div class="settings-field">
+        <label>fal.ai Key (Flux.1-schnell) <span class="key-status" id="fal-status">not set</span></label>
+        <input id="key-fal" type="password" placeholder="..."/>
+        <div class="hint">fal.ai → Sign up free → Dashboard → API Keys. ~$0.003/image. Falls back to free Pollinations if not set.</div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">// Publishing</div>
+      <div class="settings-field">
+        <label>Gumroad Access Token <span class="key-status" id="gumroad-status">not set</span></label>
+        <input id="key-gumroad" type="password" placeholder="..."/>
+        <div class="hint">app.gumroad.com → Settings → Advanced → Generate Token</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-pink" onclick="saveKeys()">✦ Save Keys</button>
+      <button class="btn btn-ghost" onclick="closeSettings()">✗ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">magnet<span>o</span></div>
+  <div class="tagline">// idea → spy market → AI images → digital product → gumroad</div>
+  <div class="badge-row">
+    <span class="badge badge-flux" id="badge-flux">Flux.1-schnell (no key)</span>
+    <span class="badge badge-groq" id="badge-ai">Groq (no key)</span>
+    <span class="badge badge-free">BYOK — no markup</span>
+  </div>
+</div>
+<!-- STEP 1: INPUT -->
+<div class="max-w">
+  <div class="card" id="step-input">
+    <div class="card-label">// step 1 — describe your product</div>
+    <div class="field">
+      <label>Product Idea</label>
+      <input id="product-name" type="text" placeholder="e.g. Bunny stickers, Pastel planner, Affirmation cards, A4 celestial poster..."/>
+    </div>
+    <div class="field">
+      <label>Extra details (optional)</label>
+      <textarea id="product-hint" placeholder="e.g. Pastel spring colors, cute faces, transparent backgrounds, kawaii style..."></textarea>
+    </div>
+    <div class="field">
+      <label>Upload Images (optional — leave empty to auto-generate)</label>
+      <input id="image-upload" type="file" multiple accept="image/*" onchange="handleImageUpload(event)" style="padding:10px;cursor:pointer;"/>
+      <div id="upload-preview" style="display:none;margin-top:12px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;">📁 Uploaded images:</div>
+        <div id="preview-list" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Category</label>
+        <select id="product-category">
+          <option value="Let AI Decide">✨ Let AI Decide</option>
+          <option value="Sticker Sheet">Sticker Sheet</option>
+          <option value="Clipart Pack">Clipart Pack</option>
+          <option value="Icon Pack">Icon Pack</option>
+          <option value="Coloring Pages">Coloring Pages</option>
+          <option value="Wall Art / Poster">Wall Art / Poster</option>
+          <option value="Card Set">Affirmation / Card Set</option>
+          <option value="Pattern Pack">Pattern Pack</option>
+          <option value="Address Labels">Address Labels</option>
+          <option value="Gift Tags">Gift Tags</option>
+          <option value="Planner Pages">Planner Pages</option>
+          <option value="Journal Pages">Journal Pages</option>
+          <option value="Worksheet">Worksheet</option>
+          <option value="Ebook / Guide">Ebook / Guide</option>
+          <option value="Social Media Templates">Social Media Templates</option>
+          <option value="Certificate Template">Certificate Template</option>
+          <option value="Logo Kit">Logo Kit</option>
+          <option value="Party Kit">Party Kit</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Number of images</label>
+        <select id="product-count">
+          <option value="3">3 images</option>
+          <option value="6" selected>6 images</option>
+          <option value="9">9 images</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-spy" id="spy-btn" onclick="spyMarket()">🔍 Spy Market — analyze competitors first</button>
+    <div class="spy-result" id="spy-result"></div>
+    <button class="btn btn-pink" id="gen-btn" onclick="generatePlan()" style="margin-top:14px">✦ Generate Product Plan</button>
+    <button class="btn btn-ghost" id="auto-btn" style="margin-top:8px;width:100%;border:1px dashed var(--pink);opacity:0.85" onclick="autoCreateProduct()">⚡ Auto-Create — spy → plan → images → PDF → publish</button>
+    <div id="form-error" style="color:#f87171;font-family:'DM Mono',monospace;font-size:0.7rem;margin-top:8px;display:none;"></div>
+  </div>
+</div>
+<!-- STATUS -->
+<div class="status-block" id="status-block" style="max-width:640px">
+  <div class="status-label" id="status-label">// working...</div>
+  <div class="status-body" id="status-body"></div>
+</div>
+
+<!-- AUTO-APPROVE PANEL (shown only when auto-create runs) -->
+<div class="step" id="step-auto-approve" style="display:none;max-width:640px;margin:0 auto">
+  <div class="card">
+    <div class="step-header">
+      <div class="step-num" style="font-size:1.1rem">⚡</div>
+      <div>
+        <div class="step-title">Auto-Create — Review Plan</div>
+        <div class="step-sub">// approve to run images → PDF → publish automatically</div>
+      </div>
+    </div>
+    <div id="auto-approve-body" style="margin-top:12px"></div>
+    <div id="auto-execute-progress" style="display:none;font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--pink);margin-top:12px;line-height:2"></div>
+    <div class="btn-row" style="margin-top:18px" id="auto-approve-btns">
+      <button class="btn btn-pink" id="auto-launch-btn" onclick="autoExecute()">⚡ Approve & Launch</button>
+      <button class="btn btn-ghost" onclick="autoCancelApproval()">✗ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2: CONFIRM PLAN -->
+<div class="step" id="step-confirm">
+  <div class="card">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Your Product Plan</div>
+        <div class="step-sub">// review → approve to generate images</div>
+      </div>
+    </div>
+    <div id="plan-body"></div>
+    <div class="btn-row">
+      <button class="btn btn-pink" onclick="approveAndGenerate()">✦ Generate Images</button>
+      <button class="btn btn-ghost" onclick="startOver()">✗ Start Over</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3: IMAGES -->
+<div class="step" id="step-images">
+  <div class="card">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Generating Images</div>
+        <div class="step-sub" id="images-sub">// AI is creating your product images...</div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    <div class="image-grid" id="image-grid"></div>
+    <button class="btn btn-pink" id="build-sheet-btn" onclick="buildSheet()" disabled>✦ Build Product PDF</button>
+  </div>
+</div>
+
+<!-- STEP 4: PUBLISH -->
+<div class="step" id="step-publish">
+  <div class="card">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Review & Publish</div>
+        <div class="step-sub">// edit listing then push to gumroad</div>
+      </div>
+    </div>
+    <div id="pdf-ready-block" class="pdf-ready" style="display:none">
+      <div class="pdf-badge">PDF READY</div>
+      <a id="pdf-download-link" href="#" download class="pdf-link">⬇ Download</a>
+      <button class="pdf-print-btn" onclick="printPDF()">🖨 Print / Personal Use</button>
+    </div>
+    <div class="listing-field"><label>Title</label><input id="listing-title" type="text"/></div>
+    <div class="listing-field"><label>Description</label><textarea id="listing-description"></textarea></div>
+    <div class="listing-field"><label>Tags (comma separated)</label><input id="listing-tags" type="text"/></div>
+    <div class="listing-field"><label>Price ($)</label><input id="listing-price" type="number" min="0" step="0.01"/></div>
+    <button class="btn btn-green" id="publish-btn" onclick="publishToGumroad()" disabled>↑ Publish to Gumroad</button>
+  </div>
+</div>
+<!-- HISTORY -->
+<div class="history" id="history-wrap" style="display:none">
+  <div class="history-label">// published this session</div>
+  <div id="history-list"></div>
+</div>
+
+<script>
+// Works whether opened as a local file OR via the network (phone, shared device)
+const API = window.location.protocol === "file:"
+  ? "http://localhost:3002/magneto"
+  : (window.location.origin + "/magneto");
+let currentPlan = null;
+let generatedImages = [];
+let pdfBlob = null;
+let spyData = null;
+let generationId = 0; // incremented each run to cancel stale streaming readers
+
+// ── Keys & Settings ──
+function getKeys() {
+  return {
+    groq:     localStorage.getItem("magneto_groq") || "",
+    deepseek: localStorage.getItem("magneto_deepseek") || "",
+    fal:      localStorage.getItem("magneto_fal") || "",
+    gumroad:  localStorage.getItem("magneto_gumroad") || "",
+    preferDS: localStorage.getItem("magneto_prefer_ds") === "true"
+  };
+}
+
+function setAIPreference(pref) {
+  localStorage.setItem("magneto_prefer_ds", pref === "deepseek" ? "true" : "false");
+  document.getElementById("toggle-groq").className = "ai-toggle-btn" + (pref === "groq" ? " active" : "");
+  document.getElementById("toggle-ds").className   = "ai-toggle-btn" + (pref === "deepseek" ? " active" : "");
+}
+
+function openSettings() {
+  const k = getKeys();
+  document.getElementById("key-groq").value     = k.groq;
+  document.getElementById("key-deepseek").value = k.deepseek;
+  document.getElementById("key-fal").value      = k.fal;
+  document.getElementById("key-gumroad").value  = k.gumroad;
+  document.getElementById("toggle-groq").className = "ai-toggle-btn" + (!k.preferDS ? " active" : "");
+  document.getElementById("toggle-ds").className   = "ai-toggle-btn" + (k.preferDS ? " active" : "");
+  updateKeyStatuses();
+  document.getElementById("settings-overlay").classList.add("visible");
+}
+function closeSettings() { document.getElementById("settings-overlay").classList.remove("visible"); }
+function closeSettingsOutside(e) { if (e.target.id === "settings-overlay") closeSettings(); }
+
+function saveKeys() {
+  const groq     = document.getElementById("key-groq").value.trim();
+  const deepseek = document.getElementById("key-deepseek").value.trim();
+  const fal      = document.getElementById("key-fal").value.trim();
+  const gumroad  = document.getElementById("key-gumroad").value.trim();
+  if (groq)     localStorage.setItem("magneto_groq", groq);
+  if (deepseek) localStorage.setItem("magneto_deepseek", deepseek);
+  if (fal)      localStorage.setItem("magneto_fal", fal);
+  if (gumroad)  localStorage.setItem("magneto_gumroad", gumroad);
+  updateKeyStatuses();
+  updateBadges();
+  closeSettings();
+}
+
+function updateKeyStatuses() {
+  const k = getKeys();
+  const statuses = { groq: k.groq, deepseek: k.deepseek, fal: k.fal, gumroad: k.gumroad };
+  Object.entries(statuses).forEach(([key, val]) => {
+    const el = document.getElementById(key + "-status");
+    if (!el) return;
+    el.textContent = val ? "✓ set" : "not set";
+    el.className = "key-status " + (val ? "set" : "missing");
+  });
+}
+
+function updateBadges() {
+  const k = getKeys();
+  const fluxBadge = document.getElementById("badge-flux");
+  const aiBadge   = document.getElementById("badge-ai");
+  if (k.fal)    { fluxBadge.textContent = "Flux.1-schnell ✓ (fal.ai)"; fluxBadge.className = "badge badge-flux"; }
+  else          { fluxBadge.textContent = "Flux (no key → Pollinations fallback)"; }
+  if (k.preferDS && k.deepseek) { aiBadge.textContent = "DeepSeek ✓"; aiBadge.className = "badge badge-ds"; }
+  else if (k.groq)              { aiBadge.textContent = "Groq ✓"; aiBadge.className = "badge badge-groq"; }
+  else                          { aiBadge.textContent = "No AI key set"; }
+}
+
+window.addEventListener("load", () => {
+  updateKeyStatuses();
+  updateBadges();
+  const k = getKeys();
+  if (!k.groq && !k.deepseek && !k.together && !k.gumroad) openSettings();
+});
+
+// ── Market Spy ──
+async function spyMarket() {
+  const name = document.getElementById("product-name").value.trim();
+  const cat  = document.getElementById("product-category").value;
+  const niche = name || cat;
+  if (!niche || niche === "Let AI Decide") {
+    showFormError("Enter a product idea first to spy on the market.");
+    return;
+  }
+  hideFormError();
+  const k = getKeys();
+  const btn = document.getElementById("spy-btn");
+  btn.textContent = "🔍 Spying on market...";
+  btn.disabled = true;
+  document.getElementById("spy-result").classList.remove("visible");
+
+  try {
+    const res = await fetch(API + "/spy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        niche,
+        groq_key: k.groq,
+        deepseek_key: k.deepseek,
+        prefer_deepseek: k.preferDS
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    spyData = data;
+    renderSpyResult(data);
+    document.getElementById("spy-result").classList.add("visible");
+  } catch(err) {
+    showStatus("error", "// Spy failed: " + err.message);
+  }
+  btn.textContent = "🔍 Spy Market — re-analyze";
+  btn.disabled = false;
+}
+
+function renderSpyResult(d) {
+  const verdictClass = d.verdict && d.verdict.toLowerCase().includes("go for") ? "verdict-go"
+    : d.verdict && d.verdict.toLowerCase().includes("caution") ? "verdict-caution" : "verdict-no";
+
+  const competitors = (d.competitors || []).map(c => `
+    <div class="competitor-card">
+      <div class="comp-name">${esc(c.name)}</div>
+      <div class="comp-price">${esc(c.price)} · ${esc(c.estimated_sales || "")} sales</div>
+      <div class="comp-cols">
+        <div>
+          <div class="comp-col-label good">✓ Strengths</div>
+          ${(c.strengths || []).map(s => `<div class="comp-item">${esc(s)}</div>`).join("")}
+        </div>
+        <div>
+          <div class="comp-col-label bad">✗ Weaknesses</div>
+          ${(c.weaknesses || []).map(w => `<div class="comp-item">${esc(w)}</div>`).join("")}
+        </div>
+      </div>
+    </div>`).join("");
+
+  const gaps = (d.market_gaps || []).map(g => `<span class="gap-tag">${esc(g)}</span>`).join("");
+  const keywords = (d.keywords || []).map(kw => `<span class="gap-tag">${esc(kw)}</span>`).join("");
+
+  document.getElementById("spy-result").innerHTML = `
+    <div class="spy-section">
+      <div class="spy-h">// market verdict</div>
+      <div class="spy-verdict ${verdictClass}">${esc(d.verdict || "")}</div>
+      <div class="spy-grid">
+        <div class="spy-stat"><div class="spy-stat-val">${esc(d.saturation||"—")}</div><div class="spy-stat-label">Saturation</div></div>
+        <div class="spy-stat"><div class="spy-stat-val">${esc(d.demand_level||"—")}</div><div class="spy-stat-label">Demand</div></div>
+        <div class="spy-stat"><div class="spy-stat-val">${esc(d.trend||"—")}</div><div class="spy-stat-label">Trend</div></div>
+        <div class="spy-stat"><div class="spy-stat-val">${esc(d.avg_price_range||"—")}</div><div class="spy-stat-label">Price Range</div></div>
+        <div class="spy-stat"><div class="spy-stat-val">${esc(d.top_price_point||"—")}</div><div class="spy-stat-label">Sweet Spot</div></div>
+      </div>
+    </div>
+    <div class="spy-section">
+      <div class="spy-h">// competitors (${(d.competitors||[]).length})</div>
+      ${competitors}
+    </div>
+    <div class="spy-section">
+      <div class="spy-h">// market gaps you can exploit</div>
+      <div>${gaps || "—"}</div>
+    </div>
+    <div class="spy-section">
+      <div class="spy-h">// winning angle</div>
+      <div class="winning-angle">${esc(d.winning_angle||"—")}</div>
+    </div>
+    <div class="spy-section">
+      <div class="spy-h">// buyer keywords</div>
+      <div>${keywords || "—"}</div>
+    </div>`;
+}
+  // ── Generate Plan ──
+let uploadedImageFiles = []; // Store uploaded files
+
+function handleImageUpload(event) {
+  const files = Array.from(event.target.files);
+  uploadedImageFiles = files;
+  
+  const previewDiv = document.getElementById("preview-list");
+  previewDiv.innerHTML = files.map((file, i) => {
+    const url = URL.createObjectURL(file);
+    return `<div style="border-radius:8px;overflow:hidden;aspect-ratio:1;background:var(--bg3);display:flex;align-items:center;justify-content:center;"><img src="${url}" style="width:100%;height:100%;object-fit:cover;"/></div>`;
+  }).join("");
+  
+  document.getElementById("upload-preview").style.display = files.length > 0 ? "block" : "none";
+}
+
+function generatePlan() {
+  const name = document.getElementById("product-name").value.trim();
+  if (!name) { showFormError("Enter a product idea first."); return; }
+  const k = getKeys();
+  if (!k.groq && !k.deepseek) { showFormError("Add a Groq or DeepSeek key in ⚙ Settings first."); return; }
+  hideFormError();
+
+  setBtn("gen-btn", true, "// thinking...");
+  showStatus("generating", "// Building your product plan...");
+  hide("step-confirm"); hide("step-images"); hide("step-publish");
+
+  const spyContext = spyData ? JSON.stringify(spyData, null, 2) : null;
+
+  try {
+    const res = await fetch(API + "/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        hint: document.getElementById("product-hint").value.trim(),
+        category: document.getElementById("product-category").value,
+        count: document.getElementById("product-count").value,
+        groq_key: k.groq,
+        deepseek_key: k.deepseek,
+        prefer_deepseek: k.preferDS,
+        spy_context: spyContext
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    currentPlan = data;
+    hideStatus();
+    renderPlan(data);
+    show("step-confirm");
+    scrollSmooth("step-confirm");
+  } catch(err) {
+    showStatus("error", "// Error: " + err.message);
+  }
+  setBtn("gen-btn", false, "✦ Generate Product Plan");
+}
+
+function renderPlan(d) {
+  const images = d.images || [];
+  document.getElementById("plan-body").innerHTML = `
+    <div class="plan-box">
+      <div class="plan-title">${esc(d.title)}</div>
+      <div class="plan-meta">
+        <span>Type: <span>${esc(d.product_type||"—")}</span></span>
+        <span>Price: <span>$${esc(d.price||"—")}</span></span>
+        <span>Style: <span>${esc(d.style||"—")}</span></span>
+      </div>
+      <div class="plan-meta">
+        ${d.bg_color     ? `<span class="palette-swatch"><span class="swatch" style="background:${d.bg_color}"></span>BG</span>` : ""}
+        ${d.accent_color ? `<span class="palette-swatch"><span class="swatch" style="background:${d.accent_color}"></span>Accent</span>` : ""}
+        ${d.border_color ? `<span class="palette-swatch"><span class="swatch" style="background:${d.border_color}"></span>Border</span>` : ""}
+      </div>
+      <div class="plan-desc">${esc(d.summary||"")}</div>
+      ${images.map((img,i) => `
+        <div class="prompt-pill">
+          <span class="prompt-num">${String(i+1).padStart(2,"0")}</span>
+          <span class="prompt-name">${esc(img.name)}</span>
+          <span class="prompt-text">${esc(img.prompt)}</span>
+        </div>`).join("")}
+    </div>`;
+}
+  // ── Image Generation ──
+function approveAndGenerate() {
+  if (!currentPlan) return;
+  hide("step-confirm");
+  show("step-images");
+  scrollSmooth("step-images");
+  startImageGeneration();
+}
+
+async function startImageGeneration() {
+  const images = currentPlan.images || [];
+  generatedImages = new Array(images.length).fill(null);
+  const k = getKeys();
+  const useFlux = !!k.fal;
+
+  // Stamp this generation run — stale readers will check this and bail out
+  generationId += 1;
+  const thisGenId = generationId;
+
+  // Check if user uploaded files
+  if (uploadedImageFiles.length > 0) {
+    document.getElementById("images-sub").textContent = "// Loading your uploaded images...";
+    
+    document.getElementById("image-grid").innerHTML = images.map((img,i) => `
+      <div class="image-cell loading" id="cell-${i}">
+        <div class="cell-loading">// reading file...</div>
+        <div class="cell-label">${esc(img.name)}</div>
+      </div>`).join("");
+
+    document.getElementById("progress-bar").style.width = "0%";
+    document.getElementById("build-sheet-btn").disabled = true;
+
+    // Convert uploaded files to base64
+    const uploadPromises = uploadedImageFiles.slice(0, images.length).map((file, idx) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target.result.split(',')[1];
+          generatedImages[idx] = { name: images[idx].name, base64 };
+          const cell = document.getElementById("cell-" + idx);
+          if (cell) {
+            cell.classList.remove("loading");
+            cell.classList.add("done");
+            const img = document.createElement("img");
+            img.src = `data:image/*;base64,${base64}`;
+            const label = cell.querySelector(".cell-label");
+            cell.innerHTML = '';
+            cell.appendChild(img);
+            if (label) cell.appendChild(label);
+          }
+          document.getElementById("progress-bar").style.width = Math.round((idx + 1) / Math.min(uploadedImageFiles.length, images.length) * 100) + "%";
+          resolve();
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    await Promise.all(uploadPromises);
+    document.getElementById("images-sub").textContent = "// Uploaded images ready!";
+    document.getElementById("build-sheet-btn").disabled = false;
+    return;
+  }
+  // Original AI generation flow
+  document.getElementById("images-sub").textContent = useFlux
+    ? "// Flux.1-schnell is generating your images (fal.ai)..."
+    : "// Using Pollinations (free) — add a fal.ai key for Flux quality";
+
+  document.getElementById("image-grid").innerHTML = images.map((img,i) => `
+    <div class="image-cell loading" id="cell-${i}">
+      <div class="cell-loading">// waiting...</div>
+      <div class="cell-label">${esc(img.name)}</div>
+    </div>`).join("");
+
+  document.getElementById("progress-bar").style.width = "0%";
+  document.getElementById("build-sheet-btn").disabled = true;
+
+  fetch(API + "/generate-images", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      images,
+      fal_key: k.fal,
+      product_type: currentPlan.product_type,
+      use_flux: useFlux
+    })
+  }).then(res => {
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    function read() {
+      reader.read().then(({ done, value }) => {
+        // If a newer generation has started, stop this reader immediately
+        if (thisGenId !== generationId) { reader.cancel(); return; }
+        if (done) return;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try { handleImageEvent(JSON.parse(line.slice(6)), images.length, thisGenId); } catch(e) {}
+          }
+        }
+        read();
+      });
+    }
+    read();
+  }).catch(err => {
+    if (thisGenId === generationId) showStatus("error", "// Image generation failed: " + err.message);
+  });
+}
+
+function handleImageEvent(msg, total, genId) {
+  // Ignore events from a previous generation run
+  if (genId !== generationId) return;
+
+  if (msg.type === "progress") {
+    document.getElementById("progress-bar").style.width = Math.round((msg.index / total) * 100) + "%";
+    const cell = document.getElementById("cell-" + msg.index);
+    if (cell) {
+      const l = cell.querySelector(".cell-loading");
+      if (l) l.textContent = msg.engine === "flux" ? "// flux generating..." : "// generating...";
+    }
+  }
+  if (msg.type === "image") {
+    const cell = document.getElementById("cell-" + msg.index);
+    if (cell) {
+      cell.classList.remove("loading");
+      cell.classList.add(msg.fallback ? "fallback" : "done");
+      const engineTag = msg.fallback ? `<div class="engine-tag engine-free">free</div>` : `<div class="engine-tag engine-flux">flux</div>`;
+      cell.innerHTML = `<img src="${msg.base64}" alt="${esc(msg.name)}"/><div class="cell-label">${esc(msg.name)}</div>${engineTag}`;
+    }
+    generatedImages[msg.index] = { name: msg.name, base64: msg.base64 };
+    document.getElementById("progress-bar").style.width = Math.round((generatedImages.filter(Boolean).length / total) * 100) + "%";
+  }
+  if (msg.type === "error") {
+    const cell = document.getElementById("cell-" + msg.index);
+    if (cell) {
+      cell.classList.remove("loading"); cell.classList.add("errored");
+      cell.innerHTML = `<div class="cell-error">// failed</div><div class="cell-label">${esc(msg.name)}</div>`;
+    }
+  }
+  if (msg.type === "done") {
+    document.getElementById("progress-bar").style.width = "100%";
+    const ok = generatedImages.filter(Boolean).length;
+    if (ok > 0) {
+      document.getElementById("build-sheet-btn").disabled = false;
+      showStatus("success", `// ${ok}/${total} images ready! Build your product PDF below.`);
+    } else {
+      showStatus("error", "// All images failed. Check your API key or internet connection.");
+    }
+  }
+    }
+  // ── Build PDF ──
+async function buildSheet() {
+  if (!currentPlan) return;
+  setBtn("build-sheet-btn", true, "// assembling PDF...");
+  showStatus("generating", "// Building your product PDF...");
+  try {
+    const res = await fetch(API + "/create-sheet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        images: generatedImages.filter(Boolean),
+        title: currentPlan.title,
+        product_type: currentPlan.product_type,
+        content_pages: currentPlan.content_pages || [],
+        bg_color: currentPlan.bg_color,
+        accent_color: currentPlan.accent_color,
+        text_color: currentPlan.text_color,
+        border_color: currentPlan.border_color
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    const byteArray = Uint8Array.from(atob(data.pdf_base64), c => c.charCodeAt(0));
+    pdfBlob = new Blob([byteArray], { type: "application/pdf" });
+    const url = URL.createObjectURL(pdfBlob);
+    const fname = (currentPlan.name || "product").toLowerCase().replace(/\s+/g, "-") + ".pdf";
+
+    document.getElementById("pdf-download-link").href = url;
+    document.getElementById("pdf-download-link").download = fname;
+    document.getElementById("pdf-ready-block").style.display = "flex";
+    document.getElementById("listing-title").value       = currentPlan.title || "";
+    document.getElementById("listing-description").value = currentPlan.description || "";
+    document.getElementById("listing-tags").value        = currentPlan.tags || "";
+    document.getElementById("listing-price").value       = currentPlan.price || "4.99";
+    document.getElementById("publish-btn").disabled = false;
+
+    hideStatus();
+    show("step-publish");
+    scrollSmooth("step-publish");
+  } catch(err) {
+    showStatus("error", "// PDF error: " + err.message);
+  }
+  setBtn("build-sheet-btn", false, "✦ Build Product PDF");
+}
+
+// ── Print / Personal Use ──
+function printPDF() {
+  const link = document.getElementById("pdf-download-link");
+  if (!link || !link.href || link.href === "#") {
+    showStatus("error", "// Build the PDF first, then print.");
+    return;
+  }
+  const win = window.open(link.href, "_blank");
+  if (win) {
+    win.addEventListener("load", () => {
+      try { win.print(); } catch(e) {}
+    });
+  }
+}
+  // ── Publish ──
+async function publishToGumroad() {
+  if (!pdfBlob || !currentPlan) return;
+  const k = getKeys();
+  if (!k.gumroad) { showStatus("error", "// Add your Gumroad token in ⚙ Settings first."); return; }
+
+  setBtn("publish-btn", true, "// publishing...");
+  showStatus("generating", "// Pushing to Gumroad...");
+  try {
+    const formData = new FormData();
+    formData.append("title",       document.getElementById("listing-title").value);
+    formData.append("description", document.getElementById("listing-description").value);
+    formData.append("tags",        document.getElementById("listing-tags").value);
+    formData.append("price",       document.getElementById("listing-price").value);
+    formData.append("name",        currentPlan.name);
+    formData.append("gumroad_key", k.gumroad);
+    const fname = (currentPlan.name || "product").toLowerCase().replace(/\s+/g, "-") + ".pdf";
+    formData.append("file", pdfBlob, fname);
+
+    const res = await fetch(API + "/publish", { method: "POST", body: formData });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    hideStatus();
+    showStatus("success", `// Live on Gumroad!\n\nProduct: ${data.name}\nURL: ${data.url || "Check Gumroad dashboard"}`);
+    addToHistory(data);
+  } catch(err) {
+    showStatus("error", "// Publish failed: " + err.message);
+  }
+  setBtn("publish-btn", false, "↑ Publish to Gumroad");
+}
+
+// ── Utils ──
+function startOver() {
+  generationId += 1; // cancel any in-flight image generation
+  hide("step-confirm"); hide("step-images"); hide("step-publish");
+  hideStatus(); hideFormError();
+  currentPlan = null; generatedImages = []; pdfBlob = null; spyData = null; uploadedImageFiles = [];
+  document.getElementById("spy-result").classList.remove("visible");
+  document.getElementById("image-upload").value = "";
+  document.getElementById("upload-preview").style.display = "none";
+  document.getElementById("product-name").value = "";
+  document.getElementById("product-name").focus();
+}
+
+function esc(str) {
+  return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function show(id) { document.getElementById(id).classList.add("visible"); }
+function hide(id) { document.getElementById(id).classList.remove("visible"); }
+function scrollSmooth(id) { document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" }); }
+
+function showStatus(type, msg) {
+  const label = { generating: "// working...", success: "// success", error: "// error" }[type] || type;
+  document.getElementById("status-label").className = "status-label " + type;
+  document.getElementById("status-label").textContent = label;
+  document.getElementById("status-body").textContent = msg;
+  document.getElementById("status-block").classList.add("visible");
+}
+function hideStatus() { document.getElementById("status-block").classList.remove("visible"); }
+function showFormError(msg) { const el = document.getElementById("form-error"); el.textContent = "⚠ " + msg; el.style.display = "block"; }
+function hideFormError() { document.getElementById("form-error").style.display = "none"; }
+
+function setBtn(id, disabled, text) {
+  const b = document.getElementById(id);
+  if (b) { b.disabled = disabled; b.textContent = text; }
+}
+
+function addToHistory(data) {
+  document.getElementById("history-wrap").style.display = "block";
+  const item = document.createElement("div");
+  item.className = "history-item";
+  item.innerHTML = `
+    <div>
+      <div class="history-name">${esc(data.name)}</div>
+      <div class="history-meta">// published to gumroad</div>
+    </div>
+    ${data.url ? `<a class="history-link" href="${esc(data.url)}" target="_blank">view ↗</a>` : ""}`;
+  document.getElementById("history-list").prepend(item);
+}
+  // ─── AUTO-CREATE PIPELINE ──────────────────────────────────
+let _autoPlanData = null;
+
+async function autoCreateProduct() {
+  hideFormError();
+  const name = document.getElementById("product-name").value.trim();
+  if (!name) { showFormError("Enter a product idea first."); return; }
+  const k = getKeys();
+  if (!k.groq && !k.deepseek) { showFormError("Add a Groq or DeepSeek key in Settings first."); return; }
+
+  setBtn("auto-btn", true, "⚡ Running spy + plan...");
+  showStatus("generating", "// Running market spy + building product plan — this takes ~30s...");
+  document.getElementById("step-auto-approve").style.display = "none";
+
+  try {
+    const resp = await fetch(API + "/auto-plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        hint: (document.getElementById("product-hint") || {}).value || "",
+        category: document.getElementById("product-category").value,
+        count: (document.getElementById("product-count") || {}).value || "6",
+        price: (document.getElementById("listing-price") || {}).value || "5.99",
+        groq_key: k.groq,
+        deepseek_key: k.deepseek,
+        prefer_deepseek: k.preferDS
+      })
+    });
+    if (!resp.ok) {
+      const txt = await resp.text();
+      if (txt.includes("<!DOCTYPE") || txt.includes("<html")) throw new Error("Server returned HTML — stop and restart your server (start.bat / start.sh) to load the new endpoints, then try again.");
+      throw new Error(`Server error ${resp.status}: ${txt.slice(0, 200)}`);
+    }
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    _autoPlanData = data;
+    hideStatus();
+    _renderAutoPlanApproval(data);
+    document.getElementById("step-auto-approve").style.display = "block";
+    document.getElementById("auto-approve-btns").style.display = "flex";
+    document.getElementById("auto-execute-progress").style.display = "none";
+    document.getElementById("step-auto-approve").scrollIntoView({ behavior: "smooth" });
+  } catch (err) {
+    showStatus("error", "// Auto-plan failed: " + err.message);
+  }
+  setBtn("auto-btn", false, "⚡ Auto-Create — spy → plan → images → PDF → publish");
+}
+
+function _renderAutoPlanApproval(data) {
+  const p = data.plan || {};
+  const s = data.spy_data || {};
+  document.getElementById("auto-approve-body").innerHTML = `
+    <div style="font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:6px">${esc(p.title || p.name || "Untitled")}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--text-muted);display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+      <span>type: <span style="color:var(--pink)">${esc(p.product_type || "—")}</span></span>
+      <span>price: <span style="color:#facc15">$${esc(String(p.price || "?"))}</span></span>
+      <span>images: <span style="color:#60a5fa">${(p.images||[]).length}</span></span>
+      <span>pages: <span style="color:#34d399">${(p.content_pages||[]).length}</span></span>
+      ${s.saturation ? `<span>market: <span style="color:#facc15">${esc(s.saturation)} sat</span></span>` : ""}
+    </div>
+    ${p.summary ? `<div style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:8px">${esc(p.summary)}</div>` : ""}
+    ${s.winning_angle ? `<div style="font-size:0.75rem;color:#60a5fa;font-family:'DM Mono',monospace">// winning angle: ${esc(s.winning_angle)}</div>` : ""}
+  `;
+}
+
+async function autoExecute() {
+  if (!_autoPlanData) return;
+  const k = getKeys();
+  if (!k.gumroad) {
+    const go = confirm("No Gumroad key found — the PDF will be built but not published. Continue?");
+    if (!go) return;
+  }
+
+  document.getElementById("auto-approve-btns").style.display = "none";
+  const prog = document.getElementById("auto-execute-progress");
+  prog.style.display = "block";
+  prog.textContent = "⚡ Starting pipeline...";
+
+  const addLog = (line) => { prog.textContent += "\n" + line; };
+
+  try {
+    const resp = await fetch(API + "/auto-execute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan: _autoPlanData.plan, fal_key: k.fal, gumroad_key: k.gumroad, groq_key: k.groq })
+    });
+    const reader = resp.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const parts = buf.split("\n\n");
+      buf = parts.pop();
+      for (const part of parts) {
+        const line = part.replace(/^data:\s*/, "").trim();
+        if (!line) continue;
+        try {
+          const evt = JSON.parse(line);
+          if (evt.type === "progress") {
+            if (evt.step === "images") addLog(`🎨 Image ${evt.index}/${evt.total}: ${evt.name}`);
+            else if (evt.step === "pdf") addLog("📄 Building PDF...");
+            else if (evt.step === "publish") addLog("🛒 Publishing to Gumroad...");
+          } else if (evt.type === "done") {
+            addLog("✅ Done!");
+            if (evt.url) {
+              prog.innerHTML += `\n<a href="${esc(evt.url)}" target="_blank" style="color:var(--pink);text-decoration:underline">↗ View on Gumroad: ${esc(evt.url)}</a>`;
+              addToHistory({ name: evt.name, url: evt.url });
+            } else {
+              addLog(evt.note || "PDF ready — no Gumroad key provided.");
+            }
+            document.getElementById("auto-approve-btns").style.display = "none";
+          } else if (evt.type === "error") {
+            addLog("❌ Error: " + evt.message);
+            document.getElementById("auto-approve-btns").style.display = "flex";
+          }
+        } catch {}
+      }
+    }
+  } catch (err) {
+    addLog("❌ " + err.message);
+    document.getElementById("auto-approve-btns").style.display = "flex";
+  }
+}
+
+function autoCancelApproval() {
+  _autoPlanData = null;
+  document.getElementById("step-auto-approve").style.display = "none";
+  hideStatus();
+}
+  // ─── PWA: Service Worker ───────────────────────────────────
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
